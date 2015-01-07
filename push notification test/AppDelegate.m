@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import <asl.h>
 
 @interface AppDelegate ()
 
@@ -16,8 +17,26 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    //Registra o aplicativo para receber notificações push
+    
+    [application registerForRemoteNotifications];
+    
     return YES;
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+    //Chamado se o registro para receber notificações push falhou
+    asl_log_message(ASL_LEVEL_WARNING, "Falhou ao tentar obter token de push notifications");
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    //Chamado se o registro para receber notificações foi um sucesso. Atributo deviceToken contém o token gerado e deve ser enviado para o servidor para que mais tarde ele envie as notificações
+    asl_log_message(ASL_LEVEL_INFO, "Token gerado: %s",[[deviceToken description] UTF8String] );
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    //Chamado quando a aplicação recebe uma notificação remota
+    asl_log_message(ASL_LEVEL_INFO, "Notificação recebida: %s",[[userInfo description] UTF8String] );
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
